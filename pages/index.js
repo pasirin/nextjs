@@ -77,8 +77,7 @@ export default function Test() {
       <CssBaseline />
       <Grid2 container component="main" sx={{ height: '100vh' }}>
         <Grid2
-          display={{ xs: "none", lg: "center" }}
-          xs={6}
+          xs={0}
           sm={4}
           md={7}
           container
