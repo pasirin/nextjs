@@ -1,8 +1,8 @@
-import playwright from 'playwright-core';
+const playwright = require('playwright-aws-lambda');
 import { Subject } from './TableCellClass.js'
 
 export async function LoginAndExtract(username, Password) {
-	const browser = await playwright.chromium.launch();
+	const browser = await playwright.launchChromium();
 	const page = await browser.newPage();
 	page.setDefaultTimeout(7000)
 	try {

@@ -40,7 +40,7 @@ export default async function handler(req, res) {
             res.status(400).json({ text: 'Sai mã sinh viên hoặc mật khẩu' })
           } else {
             console.log(error)
-            res.status(500).json({ text: 'API của VNUSchedule đang lỗi mong bạn hãy thông báo lại cho chủ page' , error: error})
+            res.status(500).json({ text: 'API của VNUSchedule đang lỗi mong bạn hãy thông báo lại cho chủ page' })
           }
         }
       }
