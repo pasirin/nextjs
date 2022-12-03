@@ -24,10 +24,6 @@ export default async function handler(req, res) {
           ws.fillInSubject()
           const wb = XLSX.utils.book_new()
           XLSX.utils.book_append_sheet(wb, ws.Sheet, "Sheet")
-          if(type == "table") {
-            res.status(200).json(XLSX.utils.sheet_to_html(ws.Sheet))
-            break
-          }
           const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
           res.statusCode = 200;
           res.setHeader('Content-Disposition', 'attachment; filename="SheetJSNode.xlsx"');

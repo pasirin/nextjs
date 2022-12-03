@@ -14,12 +14,14 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
+import ArticleIcon from '@mui/icons-material/Article';
+import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
 import Slide from '@mui/material/Slide';
 import Fab from '@mui/material/Fab'
 import LoadingButton from '@mui/lab/LoadingButton';
 import { TableRow, Table, TableBody, TableCell, TableHead } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
-import Image from 'next/image';
+import useWindowSize from '../hooks/useWindowDimensions';
 
 const Img = styled('img')({
   margin: 'auto',
@@ -31,7 +33,6 @@ const Img = styled('img')({
 export default function Test() {
   const handleSubmit = (event) => {
     event.preventDefault()
-    //handleWrongInfo()
     handleLoading()
     const data = new FormData(event.currentTarget);
     const postData = async () => {
@@ -48,10 +49,10 @@ export default function Test() {
     }
     postData().then(async (data) => {
       if (data.status == 200) {
-        //TODO
-        console.log(data)
         handleLoading()
-        setTable(await handleRecivedData(await data.json()))
+        const Parsed = await data.json()
+        setTable(await handleRecivedData(Parsed))
+        setSubjectList(Parsed)
         handleTransist()
       } else {
         if (data.status == 400) {
@@ -73,7 +74,8 @@ export default function Test() {
   });
   const [checked, setChecked] = React.useState(true)
   const [loading, setLoading] = React.useState(false)
-  let [table, setTable] = React.useState(null)
+  const [table, setTable] = React.useState(null)
+  const [SubjectList, setSubjectList] = React.useState(null)
 
   const handleLoading = () => {
     setLoading((prev) => !prev)
@@ -152,15 +154,17 @@ export default function Test() {
     const table = array.map((row, i) => {
       let count = 0
       const rows = row.map((cell, j) => {
-        if (j <= 1) {
-          return <TableCell key={j} align="center">{cell}</TableCell>
+        if(j == 0) {
+          return <TableCell style={{position: "sticky", left: 0 }} sx={{bgcolor: 'black'}} key={j} align="center">{cell}</TableCell>
+        } else if (j == 1) {
+          return <TableCell style={{position: "sticky", left: '56px' }} sx={{bgcolor: 'black'}} key={j} align="center">{cell}</TableCell>
         } else if (cell != '') {
           const span = cell.time.split(' - ')[1] - cell.time.split(' - ')[0] + 1
           const bgcolor = "#" + cell.bgcolor
           const color = "#" + cell.font_color
           const text = cell.Name + "/" + cell.ID + "/" + cell.where
           return <TableCell key={j} align="center" rowSpan={span} sx={{ bgcolor: bgcolor, color: color }}>{text.split("/").map((text, index) => (
-            <p key={index}>{text}</p>
+            <p style={{margin : 0, padding:0 }} key={index}>{text}</p>
           ))}</TableCell>
         } else {
           if (count < emptyCell[i]) {
@@ -175,6 +179,8 @@ export default function Test() {
   }
 
   const theme = createTheme({ palette: { mode: 'dark' } });
+  let {height, width} = useWindowSize()
+  height -= 100
 
   return (
     <ThemeProvider theme={theme}>
@@ -279,7 +285,15 @@ export default function Test() {
       <Slide direction="up" in={!checked} mountOnEnter unmountOnExit>
         <div style={{ overflow: 'auto' }}>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Fab color="default" aria-label="Go Back" onClick={handleTransist}>
+            <Fab color="secondary" sx={{mr:1}} variant='extended'>
+              <InsertPhotoOutlinedIcon />
+              PNG
+            </Fab>
+            <Fab color='primary' sx={{mr:1}} variant='extended' onClick={handleTransist}>
+              <ArticleIcon />
+              Excel
+            </Fab>
+            <Fab color="error" aria-label="Go Back" onClick={handleTransist}>
               <CloseIcon />
             </Fab>
           </div>
@@ -289,7 +303,7 @@ export default function Test() {
               borderColor: 'text.primary',
               border: 20, borderRadius: '16px'
             }}>
-            <TableContainer sx={{ maxHeight: 'auto' }}>
+            <TableContainer sx={{ maxHeight: height }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
