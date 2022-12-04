@@ -11,7 +11,7 @@ export class Subject {
 
     setbgcolor(color) {
         this.bgcolor = color
-        this.font_color = this.chooseFontcolor()
+        this.font_color = chooseFontcolor(color)
     }
 
     returnText() {

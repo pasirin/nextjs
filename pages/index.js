@@ -22,6 +22,9 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { TableRow, Table, TableBody, TableCell, TableHead } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import useWindowSize from '../hooks/useWindowDimensions';
+import { WorkSheet } from './api/SheetClass';
+import XLSX from 'xlsx-js-style'
+import FileSaver from 'file-saver';
 
 const Img = styled('img')({
   margin: 'auto',
@@ -85,6 +88,35 @@ export default function Test() {
     setChecked((prev) => !prev)
     if (loading) {
       handleLoading()
+    }
+  }
+
+  const handlePngExport = () => {
+    const domtoimage = require("dom-to-image-more");
+    const node = document.getElementById("Preview-Table")
+    domtoimage.toBlob(node, { width: node.scrollWidth, height: node.scrollHeight }).then(function (blob) {
+      window.saveAs(blob, "tkb.png");
+    });
+  }
+
+  const handleExcelExport = () => {
+    if (SubjectList == null) {
+      alert("Không thể tạo file Excel mà không có dữ liệu môn học")
+    } else {
+      const ws = new WorkSheet('1', "SheetJSNode")
+      ws.initSheet()
+      ws.FillDataFromJSON(SubjectList)
+      ws.fillInSubject()
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws.Sheet, "Sheet")
+      const output = XLSX.write(wb, { bookType: "xlsx", type: 'binary' })
+      function s2ab(s) {
+        var buf = new ArrayBuffer(s.length);
+        var view = new Uint8Array(buf);
+        for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+        return buf;
+      }
+      saveAs(new Blob([s2ab(output)], { type: "application/octet-stream" }), 'test.xlsx')
     }
   }
 
@@ -154,17 +186,17 @@ export default function Test() {
     const table = array.map((row, i) => {
       let count = 0
       const rows = row.map((cell, j) => {
-        if(j == 0) {
-          return <TableCell style={{position: "sticky", left: 0 }} sx={{bgcolor: 'black'}} key={j} align="center">{cell}</TableCell>
+        if (j == 0) {
+          return <TableCell style={{ position: "sticky", left: 0 }} sx={{ bgcolor: 'black' }} key={j} align="center">{cell}</TableCell>
         } else if (j == 1) {
-          return <TableCell style={{position: "sticky", left: '56px' }} sx={{bgcolor: 'black'}} key={j} align="center">{cell}</TableCell>
+          return <TableCell style={{ position: "sticky", left: '56px' }} sx={{ bgcolor: 'black' }} key={j} align="center">{cell}</TableCell>
         } else if (cell != '') {
           const span = cell.time.split(' - ')[1] - cell.time.split(' - ')[0] + 1
           const bgcolor = "#" + cell.bgcolor
           const color = "#" + cell.font_color
           const text = cell.Name + "/" + cell.ID + "/" + cell.where
           return <TableCell key={j} align="center" rowSpan={span} sx={{ bgcolor: bgcolor, color: color }}>{text.split("/").map((text, index) => (
-            <p style={{margin : 0, padding:0 }} key={index}>{text}</p>
+            <p style={{ margin: 0, padding: 0 }} key={index}>{text}</p>
           ))}</TableCell>
         } else {
           if (count < emptyCell[i]) {
@@ -179,7 +211,7 @@ export default function Test() {
   }
 
   const theme = createTheme({ palette: { mode: 'dark' } });
-  let {height, width} = useWindowSize()
+  let { height, width } = useWindowSize()
   height -= 100
 
   return (
@@ -285,11 +317,11 @@ export default function Test() {
       <Slide direction="up" in={!checked} mountOnEnter unmountOnExit>
         <div style={{ overflow: 'auto' }}>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Fab color="secondary" sx={{mr:1}} variant='extended'>
+            <Fab color="secondary" sx={{ mr: 1 }} variant='extended' onClick={handlePngExport}>
               <InsertPhotoOutlinedIcon />
               PNG
             </Fab>
-            <Fab color='primary' sx={{mr:1}} variant='extended' onClick={handleTransist}>
+            <Fab color='primary' sx={{ mr: 1 }} variant='extended' onClick={handleExcelExport}>
               <ArticleIcon />
               Excel
             </Fab>
@@ -304,7 +336,7 @@ export default function Test() {
               border: 20, borderRadius: '16px'
             }}>
             <TableContainer sx={{ maxHeight: height }}>
-              <Table stickyHeader aria-label="sticky table">
+              <Table id="Preview-Table" stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">Tiết</TableCell>

@@ -1,5 +1,6 @@
 import XLSX from 'xlsx-js-style'
 import { chooseFontcolor } from './TableCellClass.js'
+import { Subject } from './TableCellClass.js'
 
 export class WorkSheet {
     constructor(Theme, Name) {
@@ -16,6 +17,16 @@ export class WorkSheet {
 
     setSubjectList(SubjectList) {
         this.SubjectList = SubjectList
+    }
+
+    FillDataFromJSON(SubjectList) {
+        const newSubjectList = []
+        SubjectList.forEach(element => {
+            const currentSubject = new Subject(element.Name,element.ID,element.Date,element.time,element.where)
+            currentSubject.setbgcolor(element.bgcolor)
+            newSubjectList.push(currentSubject)
+        })
+        this.setSubjectList(newSubjectList)
     }
 
     getStartEnd(time) {
@@ -74,7 +85,8 @@ export class WorkSheet {
                 }
                 location += (Number(start) + 1)
                 this.merge.push(XLSX.utils.decode_range(mergeRange))
-                this.Sheet[location] = { t: "s", v: element.returnText(), s: { alignment: { vertical: "center", horizontal: "center", wrapText: true }, font: { bold: "true", color: { rgb: element.font_color } }, fill: { fgColor: { rgb: element.bgcolor } } } }
+                const text = element.Name + "\n" + element.ID + "\n" + element.where
+                this.Sheet[location] = { t: "s", v: text, s: { alignment: { vertical: "center", horizontal: "center", wrapText: true }, font: { bold: "true", color: { rgb: element.font_color } }, fill: { fgColor: { rgb: element.bgcolor } } } }
             }
         });
     }
