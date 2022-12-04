@@ -243,7 +243,7 @@ export default function Test() {
                   animation: "fadeIn 5s",
                 }}
                 alt="Icon"
-                src="/images/logo-removebg-preview.png" />
+                src="/images/logo.png" />
             </Grid2>
             <Grid2 noValidate xs={12} sm={8} md={5} component={Paper} elevation={6} square>
               <Box
