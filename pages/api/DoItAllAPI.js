@@ -4,17 +4,17 @@ import { LoginAndExtract } from './FetchData.js'
 import { errors } from 'playwright-core';
 
 export default async function handler(req, res) {
-  const method  = req.method
+  const method = req.method
   const body = JSON.parse(req.body)
   switch (method) {
     case "POST":
-      const {mssv, password, type}  = body
+      const { mssv, password, type } = body
       if (mssv == undefined || password == undefined) {
         res.status(404).json({ text: 'Error missing Username and Password' })
       } else {
         try {
           const SubjectList = await LoginAndExtract(mssv, password)
-          if(type == "dataOnly") {
+          if (type == "dataOnly") {
             res.status(200).json(SubjectList)
             break
           }
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
           res.end(buf);
         } catch (error) {
           if (error instanceof errors.TimeoutError) {
-            res.status(408).json({ text: 'Server trường hiện đang không phản hồi, nếu bạn có thể vào trang http://dangkyhoc.vnu.edu.vn/ bình thường thì xin hãy thử lại sau vài giây' })
+            res.status(408).json({ text: 'Server trường hiện đang không phản hồi hoặc không cho phép đăng nhập, nếu bạn có thể vào trang http://dangkyhoc.vnu.edu.vn/ bình thường thì xin hãy thử lại sau vài giây' })
           } else if (error.name == "WrongUsernamePassword") {
             res.status(400).json({ text: 'Sai mã sinh viên hoặc mật khẩu' })
           } else {

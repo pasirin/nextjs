@@ -168,29 +168,20 @@ export default function Test() {
         temp.Date = JSON.parse(JSON.stringify(element.Date[i]))
         temp.time = JSON.parse(JSON.stringify(element.time[i]))
         array[row][col] = temp
-      }
-    });
-
-    const emptyCell = new Array(14).fill(7)
-    for (let i = 0; i < rows; i++) {
-      for (let j = 2; j < columns; j++) {
-        if (array[i][j] != '') {
-          const span = array[i][j].time.split(' - ')[1] - array[i][j].time.split(' - ')[0] + 1
-          for (let k = i; k < i + span; k++) {
-            emptyCell[k]--
-          }
+        const span = array[row][col].time.split(' - ')[1] - array[row][col].time.split(' - ')[0] + 1
+        for (let j = 1; j < span; j++) {
+          array[row + j][col] = null
         }
       }
-    }
+    })
 
     const table = array.map((row, i) => {
-      let count = 0
       const rows = row.map((cell, j) => {
         if (j == 0) {
           return <TableCell style={{ position: "sticky", left: 0 }} sx={{ bgcolor: 'black' }} key={j} align="center">{cell}</TableCell>
         } else if (j == 1) {
           return <TableCell style={{ position: "sticky", left: '56px' }} sx={{ bgcolor: 'black' }} key={j} align="center">{cell}</TableCell>
-        } else if (cell != '') {
+        } else if (cell != '' && cell != null) {
           const span = cell.time.split(' - ')[1] - cell.time.split(' - ')[0] + 1
           const bgcolor = "#" + cell.bgcolor
           const color = "#" + cell.font_color
@@ -199,9 +190,8 @@ export default function Test() {
             <p style={{ margin: 0, padding: 0 }} key={index}>{text}</p>
           ))}</TableCell>
         } else {
-          if (count < emptyCell[i]) {
-            count++
-            return <TableCell key={j}></TableCell>
+          if (cell == '') {
+            return <TableCell key={j} align="center"></TableCell>
           }
         }
       })
